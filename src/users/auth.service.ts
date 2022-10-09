@@ -31,12 +31,14 @@ export class AuthService {
   }
 
   async signin(email: string, password: string) {
+    // find user by email
     const [user] = await this.usersService.find(email);
 
     if (!user) {
       throw new NotFoundException('User not found');
     }
 
+    // verify password is correct
     const [salt, storedHash] = user.password.split('.');
     const hash = (await scrypt(password, salt, 32)) as Buffer;
 
@@ -44,6 +46,7 @@ export class AuthService {
       throw new BadRequestException('bad password');
     }
 
+    // return user
     return user;
   }
 }
